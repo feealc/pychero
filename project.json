@@ -1,0 +1,31 @@
+{
+    "stars": {
+        "min": 0,
+        "max": 10
+    },
+    "chapters": {
+        "min": 1,
+        "max": 31
+    },
+    "events": [
+        "Ancient Maze",
+        "Evil Dungeon",
+        "Flying Bullets",
+        "Up-close Dangers"
+    ],
+    "train_stats": [
+        "Attack",
+        "Crit Damage",
+        "Collision Damage Resistance",
+        "Damage to Airborne Units",
+        "Damage to Bosses",
+        "Damage to Ground Units",
+        "Damage to Melee Units",
+        "Damage to Mobs",
+        "Damage to Ranged Units",
+        "Front Damage Resistance",
+        "Max HP",
+        "Projectile Resistance",
+        "Rear Damage Resistance"
+    ]
+}
