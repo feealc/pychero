@@ -13,6 +13,7 @@ from classes.egg import ChapterData
 from classes.egg import TrainStatData
 from classes.egg import TrainStatStarsData
 from classes.egg import CompetitionData
+import define as df
 
 
 class WindowEggEdit(BMainWindow):
@@ -35,6 +36,8 @@ class WindowEggEdit(BMainWindow):
         self.__db = ArcheroDb()
         self.__json = HandleJson(file_name='project.json')
         # self.__json.dump_json()
+
+        self.__flag_chapter_event_update = False
 
         self.__init_interface()
 
@@ -113,44 +116,53 @@ class WindowEggEdit(BMainWindow):
         # find
         row_find = QHBoxLayout()
         # normal chapter
-        self.gb_normal_ch = QGroupBox('Normal')
-        self.cb_rec_normal_ch = QCheckBox('Recomendado')
+        self.gb_normal_ch = QGroupBox(df.kNORMAL_CHAPTER)
+        self.cb_rec_normal_ch = QCheckBox(df.kRECOMMENDED)
         self.table_normal_ch = BTableWidget()
+        self.table_normal_ch.doubleClicked.connect(self.__action_edit_chapter_normal)
         self.cbox_normal_ch = QComboBox()
-        self.cb_rec_add_normal_ch = QCheckBox('Recomendado')
-        self.bt_add_normal_ch = QPushButton('Adicionar')
+        self.cb_rec_add_normal_ch = QCheckBox(df.kRECOMMENDED)
+        self.bt_add_normal_ch = QPushButton(df.kBT_ADD_TEXT)
+        self.bt_cancel_normal_ch = QPushButton(df.kBT_CANCEL_TEXT)
         self.__build_find_chapter(gb=self.gb_normal_ch,
                                   cb_filter_rec=self.cb_rec_normal_ch,
                                   table=self.table_normal_ch,
                                   cbox=self.cbox_normal_ch,
                                   cb_add_rec=self.cb_rec_add_normal_ch,
-                                  bt_add=self.bt_add_normal_ch)
+                                  bt_add=self.bt_add_normal_ch,
+                                  bt_cancel=self.bt_cancel_normal_ch)
         # hero chapter
-        self.gb_hero_ch = QGroupBox('Hero')
-        self.cb_rec_hero_ch = QCheckBox('Recomendado')
+        self.gb_hero_ch = QGroupBox(df.kHERO_CHAPTER)
+        self.cb_rec_hero_ch = QCheckBox(df.kRECOMMENDED)
         self.table_hero_ch = BTableWidget()
+        self.table_hero_ch.doubleClicked.connect(self.__action_edit_chapter_hero)
         self.cbox_hero_ch = QComboBox()
-        self.cb_rec_add_hero_ch = QCheckBox('Recomendado')
-        self.bt_add_hero_ch = QPushButton('Adicionar')
+        self.cb_rec_add_hero_ch = QCheckBox(df.kRECOMMENDED)
+        self.bt_add_hero_ch = QPushButton(df.kBT_ADD_TEXT)
+        self.bt_cancel_hero_ch = QPushButton(df.kBT_CANCEL_TEXT)
         self.__build_find_chapter(gb=self.gb_hero_ch,
                                   cb_filter_rec=self.cb_rec_hero_ch,
                                   table=self.table_hero_ch,
                                   cbox=self.cbox_hero_ch,
                                   cb_add_rec=self.cb_rec_add_hero_ch,
-                                  bt_add=self.bt_add_hero_ch)
+                                  bt_add=self.bt_add_hero_ch,
+                                  bt_cancel=self.bt_cancel_hero_ch)
         # event
-        self.gb_event_ch = QGroupBox('Evento')
-        self.cb_rec_event_ch = QCheckBox('Recomendado')
+        self.gb_event_ch = QGroupBox(df.kEVENT)
+        self.cb_rec_event_ch = QCheckBox(df.kRECOMMENDED)
         self.table_event_ch = BTableWidget()
+        self.table_event_ch.doubleClicked.connect(self.__action_edit_event)
         self.cbox_event_ch = QComboBox()
-        self.cb_rec_add_event_ch = QCheckBox('Recomendado')
-        self.bt_add_event_ch = QPushButton('Adicionar')
+        self.cb_rec_add_event_ch = QCheckBox(df.kRECOMMENDED)
+        self.bt_add_event_ch = QPushButton(df.kBT_ADD_TEXT)
+        self.bt_cancel_event_ch = QPushButton(df.kBT_CANCEL_TEXT)
         self.__build_find_chapter(gb=self.gb_event_ch,
                                   cb_filter_rec=self.cb_rec_event_ch,
                                   table=self.table_event_ch,
                                   cbox=self.cbox_event_ch,
                                   cb_add_rec=self.cb_rec_add_event_ch,
-                                  bt_add=self.bt_add_event_ch)
+                                  bt_add=self.bt_add_event_ch,
+                                  bt_cancel=self.bt_cancel_event_ch)
         row_find.addWidget(self.gb_normal_ch)
         row_find.addWidget(self.gb_hero_ch)
         row_find.addWidget(self.gb_event_ch)
@@ -313,7 +325,7 @@ class WindowEggEdit(BMainWindow):
         row_bt.addWidget(self.bt_save)
         self.main_layout.addLayout(row_bt)
 
-    def __build_find_chapter(self, gb, cb_filter_rec, table, cbox, cb_add_rec, bt_add):
+    def __build_find_chapter(self, gb, cb_filter_rec, table, cbox, cb_add_rec, bt_add, bt_cancel):
         gb_layout = QVBoxLayout()
         gb_layout.setAlignment(Qt.AlignCenter)
 
@@ -326,12 +338,12 @@ class WindowEggEdit(BMainWindow):
         table.b_set_column_header(header_labels=['Capítulo', 'Recomendado'])
         table.b_ajust_header_columns_headerview(header_view_list=[QHeaderView.Stretch, QHeaderView.ResizeToContents])
         table.setMaximumWidth(260)
-        table.setMaximumHeight(150)
+        table.setMaximumHeight(200)
         self.__load_chapters(title=gb.title())
         gb_layout.addWidget(table)
 
         # row - cbox / checkbox
-        if gb.title() == 'Evento':
+        if gb.title() == df.kEVENT:
             list_cbox = self.__json.get_events()
         else:
             ch_min = self.__json.get_chapter_min()
@@ -344,24 +356,32 @@ class WindowEggEdit(BMainWindow):
         row_cbox_cb.addWidget(cb_add_rec)
         gb_layout.addLayout(row_cbox_cb)
 
+        gb_layout_row_bt = QHBoxLayout()
+
         # add
         bt_add.clicked.connect(lambda: self.__action_add_chapter_event(title=gb.title()))
-        gb_layout.addWidget(bt_add)
+        gb_layout_row_bt.addWidget(bt_add)
+
+        # cancel
+        bt_cancel.clicked.connect(lambda: self.__action_cancel_edit_chapter_event(title=gb.title()))
+        bt_cancel.hide()
+        gb_layout_row_bt.addWidget(bt_cancel)
 
         #
 
+        gb_layout.addLayout(gb_layout_row_bt)
         gb.setLayout(gb_layout)
 
     def __load_chapters(self, title):
         rows = []
         table = None
-        if title == 'Normal':
+        if title == df.kNORMAL_CHAPTER:
             rows = self.egg.find_normal_chapters.chapter_data
             table = self.table_normal_ch
-        elif title == 'Hero':
+        elif title == df.kHERO_CHAPTER:
             rows = self.egg.find_hero_chapters.chapter_data
             table = self.table_hero_ch
-        elif title == 'Evento':
+        elif title == df.kEVENT:
             rows = self.egg.find_events.chapter_data
             table = self.table_event_ch
 
@@ -394,22 +414,87 @@ class WindowEggEdit(BMainWindow):
         # print(f'__action_add_chapter_event() - title [{title}]')
         chapter = None
         recommended = False
-        if title == 'Normal':
+        cbox = None
+        cb_rec = None
+        bt_add = None
+        bt_cancel = None
+        if title == df.kNORMAL_CHAPTER:
             chapter = self.cbox_normal_ch.currentText()
             recommended = self.cb_rec_add_normal_ch.isChecked()
-        elif title == 'Hero':
+            cbox = self.cbox_normal_ch
+            cb_rec = self.cb_rec_add_normal_ch
+            bt_add = self.bt_add_normal_ch
+            bt_cancel = self.bt_cancel_normal_ch
+        elif title == df.kHERO_CHAPTER:
             chapter = self.cbox_hero_ch.currentText()
             recommended = self.cb_rec_add_hero_ch.isChecked()
-        elif title == 'Evento':
+            cbox = self.cbox_hero_ch
+            cb_rec = self.cb_rec_add_hero_ch
+            bt_add = self.bt_add_hero_ch
+            bt_cancel = self.bt_cancel_hero_ch
+        elif title == df.kEVENT:
             chapter = self.cbox_event_ch.currentText()
             recommended = self.cb_rec_add_event_ch.isChecked()
+            cbox = self.cbox_event_ch
+            cb_rec = self.cb_rec_add_event_ch
+            bt_add = self.bt_add_event_ch
+            bt_cancel = self.bt_cancel_event_ch
 
         # print(f'chapter [{chapter}] recommended [{recommended}]')
         ch_data = ChapterData(from_add=(chapter, recommended))
-        if not self.egg.add_chapter(title=title, ch_data=ch_data):
-            QMessageBox.information(self, title, 'Capítulo já existe.', QMessageBox.Ok)
-        else:
+        if self.__flag_chapter_event_update:
+            self.egg.update_chapter(title=title, ch_data=ch_data)
             self.__load_chapters(title=title)
+
+            cbox.setCurrentIndex(0)
+            cb_rec.setChecked(False)
+            bt_add.setText(df.kBT_ADD_TEXT)
+            bt_cancel.hide()
+        else:
+            if not self.egg.add_chapter(title=title, ch_data=ch_data):
+                QMessageBox.information(self, title, 'Capítulo já existe.', QMessageBox.Ok)
+            else:
+                self.__load_chapters(title=title)
+
+    def __action_cancel_edit_chapter_event(self, title):
+        table = None
+        cbox = None
+        cb_rec = None
+        bt_add = None
+        bt_cancel = None
+        if title == df.kNORMAL_CHAPTER:
+            table = self.table_normal_ch
+            cbox = self.cbox_normal_ch
+            cb_rec = self.cb_rec_add_normal_ch
+            bt_add = self.bt_add_normal_ch
+            bt_cancel = self.bt_cancel_normal_ch
+        elif title == df.kHERO_CHAPTER:
+            table = self.table_hero_ch
+            cbox = self.cbox_hero_ch
+            cb_rec = self.cb_rec_add_hero_ch
+            bt_add = self.bt_add_hero_ch
+            bt_cancel = self.bt_cancel_hero_ch
+        elif title == df.kEVENT:
+            table = self.table_event_ch
+            cbox = self.cbox_event_ch
+            cb_rec = self.cb_rec_add_event_ch
+            bt_add = self.bt_add_event_ch
+            bt_cancel = self.bt_cancel_event_ch
+
+        if table is not None:
+            table.clearSelection()
+
+        if cbox is not None:
+            cbox.setCurrentIndex(0)
+
+        if cb_rec is not None:
+            cb_rec.setChecked(False)
+
+        if bt_add is not None:
+            bt_add.setText(df.kBT_ADD_TEXT)
+
+        if bt_cancel is not None:
+            bt_cancel.hide()
 
     def __action_add_train_cost(self):
         cost_str = self.txt_train_cost.text()
@@ -477,6 +562,60 @@ class WindowEggEdit(BMainWindow):
 
         self.cbox_competition_stat.setFocus()
         self.txt_competition_stat_value.setText('')
+
+    def __action_edit_chapter_normal(self, mi):
+        self.__action_edit_chapter_event(mi=mi, title=df.kNORMAL_CHAPTER)
+
+    def __action_edit_chapter_hero(self, mi):
+        self.__action_edit_chapter_event(mi=mi, title=df.kHERO_CHAPTER)
+
+    def __action_edit_event(self, mi):
+        self.__action_edit_chapter_event(mi=mi, title=df.kEVENT)
+
+    def __action_edit_chapter_event(self, mi, title):
+        cbox = None
+        cb_rec = None
+        bt_add = None
+        bt_cancel = None
+        reg = None
+
+        index = mi.row()
+        if index >= 0:
+            self.__flag_chapter_event_update = True
+
+            if title == df.kNORMAL_CHAPTER:
+                reg = self.egg.find_normal_chapters.chapter_data[index]
+                cbox = self.cbox_normal_ch
+                cb_rec = self.cb_rec_add_normal_ch
+                bt_add = self.bt_add_normal_ch
+                bt_cancel = self.bt_cancel_normal_ch
+            elif title == df.kHERO_CHAPTER:
+                reg = self.egg.find_hero_chapters.chapter_data[index]
+                cbox = self.cbox_hero_ch
+                cb_rec = self.cb_rec_add_hero_ch
+                bt_add = self.bt_add_hero_ch
+                bt_cancel = self.bt_cancel_hero_ch
+            elif title == df.kEVENT:
+                reg = self.egg.find_events.chapter_data[index]
+                cbox = self.cbox_event_ch
+                cb_rec = self.cb_rec_add_event_ch
+                bt_add = self.bt_add_event_ch
+                bt_cancel = self.bt_cancel_event_ch
+
+            # print(f'__action_edit_chapter_event [{title}] [{index}] [{reg}] '
+            #       f'flag [{self.__flag_chapter_event_update}]')
+
+            if cbox is not None:
+                cbox.setCurrentText(reg.chapter_str)
+
+            if cb_rec is not None:
+                cb_rec.setChecked(reg.recommended)
+
+            if bt_add is not None:
+                bt_add.setText(df.kBT_UPDATE_TEXT)
+
+            if bt_cancel is not None:
+                bt_cancel.show()
 
     @staticmethod
     def __get_txt_value(txt, required=False, error_msg='', convert_type=None):
