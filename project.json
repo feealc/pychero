@@ -5,12 +5,13 @@
     },
     "chapters": {
         "min": 1,
-        "max": 31
+        "max": 36
     },
     "events": [
         "Ancient Maze",
         "Evil Dungeon",
         "Flying Bullets",
+        "Mystery Mine",
         "Up-close Dangers"
     ],
     "train_stats": [

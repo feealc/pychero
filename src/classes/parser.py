@@ -96,6 +96,11 @@ class FindParser(ParserBase):
         # print(f'str_db [{str_db[:-1]}]')
         return str_db[:-1]
 
+    def update(self, ch_data):
+        for index, ch in enumerate(self.chapter_data):
+            if ch.chapter == ch_data.chapter:
+                self.chapter_data[index] = ch_data
+
 
 class ChapterData:
     def __init__(self, from_db=None, from_add=None):
@@ -114,6 +119,10 @@ class ChapterData:
 
     def __str__(self):
         return f'chapter [{self.chapter}] recommended [{self.recommended}]'
+
+    @property
+    def chapter_str(self):
+        return str(self.chapter)
 
     def __parse(self, value):
         self.chapter = value[0]

@@ -1,6 +1,7 @@
 from classes.egg_base import EggBase
 from classes.parser import *
 from database.archero_db import ArcheroDb
+import define as df
 
 
 class Egg(EggBase):
@@ -36,17 +37,17 @@ class Egg(EggBase):
         self.stars = tuple_from_db[index]
 
         index += 1
-        self.find_normal_chapters = FindParser(name='Normal', value_orig=tuple_from_db[index])
+        self.find_normal_chapters = FindParser(name=df.kNORMAL_CHAPTER, value_orig=tuple_from_db[index])
         # self.find_normal_chapters.dump()
         # self.find_normal_chapters.dump_find()
 
         index += 1
-        self.find_hero_chapters = FindParser(name='Hero', value_orig=tuple_from_db[index])
+        self.find_hero_chapters = FindParser(name=df.kHERO_CHAPTER, value_orig=tuple_from_db[index])
         # self.find_hero_chapters.dump()
         # self.find_hero_chapters.dump_find()
 
         index += 1
-        self.find_events = FindParser(name='Event', value_orig=tuple_from_db[index])
+        self.find_events = FindParser(name=df.kEVENT, value_orig=tuple_from_db[index])
         # self.find_events.dump()
         # self.find_events.dump_find()
 
@@ -123,15 +124,15 @@ class Egg(EggBase):
         print(msg)
 
     def find_chapter_exists(self, title, chapter) -> bool:
-        if title == 'Normal':
+        if title == df.kNORMAL_CHAPTER:
             for ch in self.find_normal_chapters.chapter_data:
                 if int(chapter) == ch.chapter:
                     return True
-        elif title == 'Hero':
+        elif title == df.kHERO_CHAPTER:
             for ch in self.find_hero_chapters.chapter_data:
                 if int(chapter) == ch.chapter:
                     return True
-        elif title == 'Evento':
+        elif title == df.kEVENT:
             for ch in self.find_events.chapter_data:
                 if chapter == ch.chapter:
                     return True
@@ -139,16 +140,26 @@ class Egg(EggBase):
 
     def add_chapter(self, title, ch_data):
         if not self.find_chapter_exists(title=title, chapter=ch_data.chapter):
-            if title == 'Normal':
+            if title == df.kNORMAL_CHAPTER:
                 self.find_normal_chapters.chapter_data.append(ch_data)
-            elif title == 'Hero':
+            elif title == df.kHERO_CHAPTER:
                 self.find_hero_chapters.chapter_data.append(ch_data)
-            elif title == 'Evento':
+            elif title == df.kEVENT:
                 self.find_events.chapter_data.append(ch_data)
             self.sort_chapter_data()
             return True
         else:
             return False
+
+    def update_chapter(self, title, ch_data):
+        if title == df.kNORMAL_CHAPTER:
+            self.find_normal_chapters.update(ch_data=ch_data)
+        elif title == df.kHERO_CHAPTER:
+            self.find_hero_chapters.update(ch_data=ch_data)
+        elif title == df.kEVENT:
+            self.find_events.update(ch_data=ch_data)
+
+        self.sort_chapter_data()
 
     def sort_chapter_data(self):
         self.find_normal_chapters.chapter_data.sort(key=lambda x: x.chapter)
