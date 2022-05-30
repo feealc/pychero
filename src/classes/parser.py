@@ -96,6 +96,11 @@ class FindParser(ParserBase):
         # print(f'str_db [{str_db[:-1]}]')
         return str_db[:-1]
 
+    def delete(self, ch_event):
+        for index, ch in enumerate(self.chapter_data):
+            if str(ch.chapter) == str(ch_event):
+                del self.chapter_data[index]
+
     def update(self, ch_data):
         for index, ch in enumerate(self.chapter_data):
             if ch.chapter == ch_data.chapter:
