@@ -123,6 +123,7 @@ class WindowEggEdit(BMainWindow):
         self.cbox_normal_ch = QComboBox()
         self.cb_rec_add_normal_ch = QCheckBox(df.kRECOMMENDED)
         self.bt_add_normal_ch = QPushButton(df.kBT_ADD_TEXT)
+        self.bt_delete_normal_ch = QPushButton(df.kBT_DELETE_TEXT)
         self.bt_cancel_normal_ch = QPushButton(df.kBT_CANCEL_TEXT)
         self.__build_find_chapter(gb=self.gb_normal_ch,
                                   cb_filter_rec=self.cb_rec_normal_ch,
@@ -130,6 +131,7 @@ class WindowEggEdit(BMainWindow):
                                   cbox=self.cbox_normal_ch,
                                   cb_add_rec=self.cb_rec_add_normal_ch,
                                   bt_add=self.bt_add_normal_ch,
+                                  bt_delete=self.bt_delete_normal_ch,
                                   bt_cancel=self.bt_cancel_normal_ch)
         # hero chapter
         self.gb_hero_ch = QGroupBox(df.kHERO_CHAPTER)
@@ -139,6 +141,7 @@ class WindowEggEdit(BMainWindow):
         self.cbox_hero_ch = QComboBox()
         self.cb_rec_add_hero_ch = QCheckBox(df.kRECOMMENDED)
         self.bt_add_hero_ch = QPushButton(df.kBT_ADD_TEXT)
+        self.bt_delete_hero_ch = QPushButton(df.kBT_DELETE_TEXT)
         self.bt_cancel_hero_ch = QPushButton(df.kBT_CANCEL_TEXT)
         self.__build_find_chapter(gb=self.gb_hero_ch,
                                   cb_filter_rec=self.cb_rec_hero_ch,
@@ -146,6 +149,7 @@ class WindowEggEdit(BMainWindow):
                                   cbox=self.cbox_hero_ch,
                                   cb_add_rec=self.cb_rec_add_hero_ch,
                                   bt_add=self.bt_add_hero_ch,
+                                  bt_delete=self.bt_delete_hero_ch,
                                   bt_cancel=self.bt_cancel_hero_ch)
         # event
         self.gb_event_ch = QGroupBox(df.kEVENT)
@@ -155,6 +159,7 @@ class WindowEggEdit(BMainWindow):
         self.cbox_event_ch = QComboBox()
         self.cb_rec_add_event_ch = QCheckBox(df.kRECOMMENDED)
         self.bt_add_event_ch = QPushButton(df.kBT_ADD_TEXT)
+        self.bt_delete_event_ch = QPushButton(df.kBT_DELETE_TEXT)
         self.bt_cancel_event_ch = QPushButton(df.kBT_CANCEL_TEXT)
         self.__build_find_chapter(gb=self.gb_event_ch,
                                   cb_filter_rec=self.cb_rec_event_ch,
@@ -162,6 +167,7 @@ class WindowEggEdit(BMainWindow):
                                   cbox=self.cbox_event_ch,
                                   cb_add_rec=self.cb_rec_add_event_ch,
                                   bt_add=self.bt_add_event_ch,
+                                  bt_delete=self.bt_delete_event_ch,
                                   bt_cancel=self.bt_cancel_event_ch)
         row_find.addWidget(self.gb_normal_ch)
         row_find.addWidget(self.gb_hero_ch)
@@ -325,7 +331,7 @@ class WindowEggEdit(BMainWindow):
         row_bt.addWidget(self.bt_save)
         self.main_layout.addLayout(row_bt)
 
-    def __build_find_chapter(self, gb, cb_filter_rec, table, cbox, cb_add_rec, bt_add, bt_cancel):
+    def __build_find_chapter(self, gb, cb_filter_rec, table, cbox, cb_add_rec, bt_add, bt_delete, bt_cancel):
         gb_layout = QVBoxLayout()
         gb_layout.setAlignment(Qt.AlignCenter)
 
@@ -361,6 +367,10 @@ class WindowEggEdit(BMainWindow):
         # add
         bt_add.clicked.connect(lambda: self.__action_add_chapter_event(title=gb.title()))
         gb_layout_row_bt.addWidget(bt_add)
+
+        # delete
+        bt_delete.clicked.connect(lambda: self.__action_delete_chapter_event(title=gb.title()))
+        gb_layout_row_bt.addWidget(bt_delete)
 
         # cancel
         bt_cancel.clicked.connect(lambda: self.__action_cancel_edit_chapter_event(title=gb.title()))
@@ -456,29 +466,56 @@ class WindowEggEdit(BMainWindow):
             else:
                 self.__load_chapters(title=title)
 
+    def __action_delete_chapter_event(self, title):
+        cbox = None
+        if title == df.kNORMAL_CHAPTER:
+            cbox = self.cbox_normal_ch
+        elif title == df.kHERO_CHAPTER:
+            cbox = self.cbox_hero_ch
+        elif title == df.kEVENT:
+            cbox = self.cbox_event_ch
+
+        ch_event = ''
+        if cbox is not None:
+            ch_event = cbox.currentText()
+
+        if title == df.kNORMAL_CHAPTER:
+            self.egg.find_normal_chapters.delete(ch_event=ch_event)
+        elif title == df.kHERO_CHAPTER:
+            self.egg.find_hero_chapters.delete(ch_event=ch_event)
+        elif title == df.kEVENT:
+            self.egg.find_events.delete(ch_event=ch_event)
+
+        self.__load_chapters(title=title)
+        self.__action_cancel_edit_chapter_event(title=title)
+
     def __action_cancel_edit_chapter_event(self, title):
         table = None
         cbox = None
         cb_rec = None
         bt_add = None
+        bt_delete = None
         bt_cancel = None
         if title == df.kNORMAL_CHAPTER:
             table = self.table_normal_ch
             cbox = self.cbox_normal_ch
             cb_rec = self.cb_rec_add_normal_ch
             bt_add = self.bt_add_normal_ch
+            bt_delete = self.bt_delete_normal_ch
             bt_cancel = self.bt_cancel_normal_ch
         elif title == df.kHERO_CHAPTER:
             table = self.table_hero_ch
             cbox = self.cbox_hero_ch
             cb_rec = self.cb_rec_add_hero_ch
             bt_add = self.bt_add_hero_ch
+            bt_delete = self.bt_delete_hero_ch
             bt_cancel = self.bt_cancel_hero_ch
         elif title == df.kEVENT:
             table = self.table_event_ch
             cbox = self.cbox_event_ch
             cb_rec = self.cb_rec_add_event_ch
             bt_add = self.bt_add_event_ch
+            bt_delete = self.bt_delete_event_ch
             bt_cancel = self.bt_cancel_event_ch
 
         if table is not None:
@@ -492,6 +529,9 @@ class WindowEggEdit(BMainWindow):
 
         if bt_add is not None:
             bt_add.setText(df.kBT_ADD_TEXT)
+
+        if bt_delete is not None:
+            bt_delete.hide()
 
         if bt_cancel is not None:
             bt_cancel.hide()
@@ -576,6 +616,7 @@ class WindowEggEdit(BMainWindow):
         cbox = None
         cb_rec = None
         bt_add = None
+        bt_delete = None
         bt_cancel = None
         reg = None
 
@@ -588,18 +629,21 @@ class WindowEggEdit(BMainWindow):
                 cbox = self.cbox_normal_ch
                 cb_rec = self.cb_rec_add_normal_ch
                 bt_add = self.bt_add_normal_ch
+                bt_delete = self.bt_delete_normal_ch
                 bt_cancel = self.bt_cancel_normal_ch
             elif title == df.kHERO_CHAPTER:
                 reg = self.egg.find_hero_chapters.chapter_data[index]
                 cbox = self.cbox_hero_ch
                 cb_rec = self.cb_rec_add_hero_ch
                 bt_add = self.bt_add_hero_ch
+                bt_delete = self.bt_delete_hero_ch
                 bt_cancel = self.bt_cancel_hero_ch
             elif title == df.kEVENT:
                 reg = self.egg.find_events.chapter_data[index]
                 cbox = self.cbox_event_ch
                 cb_rec = self.cb_rec_add_event_ch
                 bt_add = self.bt_add_event_ch
+                bt_delete = self.bt_delete_event_ch
                 bt_cancel = self.bt_cancel_event_ch
 
             # print(f'__action_edit_chapter_event [{title}] [{index}] [{reg}] '
@@ -613,6 +657,9 @@ class WindowEggEdit(BMainWindow):
 
             if bt_add is not None:
                 bt_add.setText(df.kBT_UPDATE_TEXT)
+
+            if bt_delete is not None:
+                bt_delete.show()
 
             if bt_cancel is not None:
                 bt_cancel.show()
