@@ -3,6 +3,7 @@ import traceback
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from custom.BLabel import BLabel
 from custom.BTableWidget import BTableWidget
 from custom.BListWidget import BListWidget
@@ -55,6 +56,10 @@ class WindowEggEdit(BMainWindow):
         # window
         self.setWindowTitle(f'Egg - {self.egg.name_en} (Id {self.egg.id})')
         # self.resize(1000, 800)
+
+        # =========================================================================================
+        sc = QShortcut(QKeySequence('Ctrl+S'), self)
+        sc.activated.connect(self.__action_save_egg)
 
         # =========================================================================================
         # name
