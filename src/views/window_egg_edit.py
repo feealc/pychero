@@ -1,3 +1,4 @@
+import datetime
 import traceback
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
@@ -324,6 +325,22 @@ class WindowEggEdit(BMainWindow):
         self.main_layout.addLayout(row_train)
 
         # =========================================================================================
+        # dates
+        gb_dates = QGroupBox()
+        gb_dates_layout = QHBoxLayout()
+
+        self.lbl_date_created = BLabel()
+        self.lbl_date_updated = BLabel()
+
+        self.__build_dates()
+
+        gb_dates_layout.addWidget(self.lbl_date_created)
+        gb_dates_layout.addWidget(self.lbl_date_updated)
+        gb_dates.setLayout(gb_dates_layout)
+        #
+        self.main_layout.addWidget(gb_dates)
+
+        # =========================================================================================
         # button
         row_bt = QHBoxLayout()
         self.bt_save = QPushButton('Salvar')
@@ -381,6 +398,15 @@ class WindowEggEdit(BMainWindow):
 
         gb_layout.addLayout(gb_layout_row_bt)
         gb.setLayout(gb_layout)
+
+    def __build_dates(self):
+        self.lbl_date_created.setText('Data criação: ' + self.egg.date_created_formatted)
+        self.lbl_date_created.b_set_font_size(size=12)
+        self.lbl_date_created.setAlignment(Qt.AlignCenter)
+
+        self.lbl_date_updated.setText('Data atualização: ' + self.egg.date_updated_formatted)
+        self.lbl_date_updated.b_set_font_size(size=12)
+        self.lbl_date_updated.setAlignment(Qt.AlignCenter)
 
     def __load_chapters(self, title):
         rows = []
@@ -740,6 +766,8 @@ class WindowEggEdit(BMainWindow):
             # print(f'competition stats [{ret}]')
             self.egg.set_gen(competition_stats=ret)
 
+            self.egg.set_gen(date_updated=datetime.datetime.now())
+
         except RequiredField as e:
             self.__handle_exception(exception=e)
             return
@@ -751,6 +779,8 @@ class WindowEggEdit(BMainWindow):
         try:
             self.__db.update_egg(egg=self.egg)
             QMessageBox.information(self, ' ', 'Egg atualizado com sucesso.', QMessageBox.Ok)
+
+            self.__build_dates()
         except:
             print(traceback.format_exc())
             QMessageBox.critical(self, ' ', 'Erro ao atualizar egg.', QMessageBox.Ok)

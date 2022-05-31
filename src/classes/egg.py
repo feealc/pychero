@@ -87,6 +87,12 @@ class Egg(EggBase):
         self.competition_stats = CompetitionParser(value_orig=tuple_from_db[index])
         # self.competition_stats.dump()
 
+        index += 1
+        self.date_created = self.conv_str2date(datetime_str=tuple_from_db[index])
+
+        index += 1
+        self.date_updated = self.conv_str2date(datetime_str=tuple_from_db[index])
+
     @property
     def to_hatch_str(self):
         return '' if self.to_hatch is None else str(self.to_hatch)
@@ -102,6 +108,14 @@ class Egg(EggBase):
     @property
     def quest2_str(self):
         return '' if self.quest2 is None else str(self.quest2)
+
+    @property
+    def date_created_formatted(self):
+        return self.conv_date2str(datetime_obj=self.date_created)
+
+    @property
+    def date_updated_formatted(self):
+        return self.conv_date2str(datetime_obj=self.date_updated)
 
     def dump(self):
         msg = (
@@ -119,7 +133,9 @@ class Egg(EggBase):
             f'train_stats [{self.train_stats.value_orig}]' + '\n'
             f'train_stats_stars [{self.train_stats_stars.value_orig}]' + '\n'
             f'competition_available [{self.competition_available}] '
-            f'competition_stats [{self.competition_stats.value_orig}]'
+            f'competition_stats [{self.competition_stats.value_orig}]' + '\n'
+            f'date_created [{self.date_created}] type [{type(self.date_created)}]' + '\n'
+            f'date_updated [{self.date_updated}] type [{type(self.date_updated)}]'
         )
         print(msg)
 

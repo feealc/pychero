@@ -100,7 +100,9 @@ class ArcheroDb:
             train_stats TEXT,
             train_stats_stars TEXT,
             competition_available BOOLEAN,
-            competition_stats TEXT
+            competition_stats TEXT,
+            date_created TIMESTAMP NOT NULL,
+            date_updated TIMESTAMP
         );
         """)
         self.__commit()
