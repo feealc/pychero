@@ -1,3 +1,6 @@
+import datetime
+import define as df
+
 
 class EggBase:
     def __init__(self):
@@ -23,6 +26,8 @@ class EggBase:
         self.train_stats_stars = None
         self.competition_available = False
         self.competition_stats = None
+        self.date_created = None
+        self.date_updated = None
 
         self.list_to_tuple = []
         self.sql_fields = []
@@ -77,6 +82,10 @@ class EggBase:
             self.competition_available = kwargs.get('competition_available')
         if 'competition_stats' in kwargs:
             self.competition_stats.value_orig = kwargs.get('competition_stats')
+        if 'date_created' in kwargs:
+            self.date_created = kwargs.get('date_created')
+        if 'date_updated' in kwargs:
+            self.date_updated = kwargs.get('date_updated')
 
     def get_fields(self, ignore_id=True):
         self.sql_fields = [
@@ -101,7 +110,9 @@ class EggBase:
             'train_stats',
             'train_stats_stars',
             'competition_available',
-            'competition_stats'
+            'competition_stats',
+            'date_created',
+            'date_updated'
         ]
         sql_fields_tuple = tuple(self.sql_fields)
         if ignore_id:
@@ -136,6 +147,8 @@ class EggBase:
             self.train_stats_stars.value_orig,
             self.competition_available,
             self.competition_stats.value_orig,
+            self.date_created,
+            self.date_updated,
         ]
         return tuple(self.list_to_tuple)
 
@@ -150,3 +163,17 @@ class EggBase:
         elif self.type_boss:
             desc = 'Boss'
         return desc
+
+    @staticmethod
+    def conv_str2date(datetime_str=None):
+        if datetime_str is None:
+            return None
+        datetime_obj = datetime.datetime.strptime(datetime_str, df.kDT_FORMAT2DATE)
+        return datetime_obj
+
+    @staticmethod
+    def conv_date2str(datetime_obj=None):
+        if datetime_obj is None:
+            return ''
+        datetime_str = datetime_obj.strftime(df.kDT_FORMAT2STRING)
+        return datetime_str
