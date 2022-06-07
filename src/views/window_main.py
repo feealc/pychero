@@ -8,6 +8,7 @@ from database.archero_db import ArcheroDb
 from classes.egg import Egg
 from views.window_egg_add import WindowEggAdd
 from views.window_egg_edit import WindowEggEdit
+import define as df
 
 
 class MainWindow(BMainWindow):
@@ -29,7 +30,7 @@ class MainWindow(BMainWindow):
             self.close()
 
     def __init_interface(self):
-        self.setWindowTitle('Archero')
+        self.setWindowTitle(df.kMAIN_TITLE)
         self.resize(1200, 800)
 
         # tabs
@@ -42,7 +43,7 @@ class MainWindow(BMainWindow):
 
     def __create_tabbar(self):
         self.__create_tab_eggs()
-        self.tabbar.addTab(self.tab_eggs, 'Eggs')
+        self.tabbar.addTab(self.tab_eggs, df.kTAB_EGGS_NAME)
         # self.tabbar.setCurrentIndex(1)
 
     def __create_tab_eggs(self):
@@ -54,7 +55,7 @@ class MainWindow(BMainWindow):
         self.__tab_eggs_create_shortcuts()
 
         # buttons
-        self.tab_eggs_bt_add = QPushButton('Adicionar')
+        self.tab_eggs_bt_add = QPushButton(df.kBT_ADD_TEXT)
         self.tab_eggs_bt_add.clicked.connect(self.__tab_eggs_action_add_egg)
 
         # labels
@@ -67,10 +68,10 @@ class MainWindow(BMainWindow):
         self.tab_eggs_lbl_layout.addWidget(self.tab_eggs_lbl_total_eggs_boss)
 
         # filter
-        self.tab_eggs_gb_filter = QGroupBox('Filtro')
+        self.tab_eggs_gb_filter = QGroupBox(df.kGB_FILTER_TEXT)
         self.tab_eggs_gb_filter_layout = QVBoxLayout()
         #
-        self.tab_eggs_bt_clear_filter = QPushButton('Limpar')
+        self.tab_eggs_bt_clear_filter = QPushButton(df.kBT_CLEAN_TEXT)
         self.tab_eggs_bt_clear_filter.clicked.connect(self.__tab_eggs_action_clear_filter)
         self.tab_eggs_gb_filter_layout.addWidget(self.tab_eggs_bt_clear_filter)
         #
