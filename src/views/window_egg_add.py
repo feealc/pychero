@@ -5,6 +5,7 @@ from custom.BLabel import BLabel
 from custom.BMainWindow import BMainWindow
 from database.archero_db import ArcheroDb
 from classes.egg_insert import EggInsert
+import define as df
 
 
 class WindowEggAdd(BMainWindow):
@@ -54,9 +55,9 @@ class WindowEggAdd(BMainWindow):
 
         # button
         row_bt = QHBoxLayout()
-        self.bt_save = QPushButton('Salvar')
+        self.bt_save = QPushButton(df.kBT_SAVE_TEXT)
         self.bt_save.clicked.connect(self.__action_save_egg)
-        self.bt_save_and_close = QPushButton('Salvar e Fechar')
+        self.bt_save_and_close = QPushButton(df.kBT_SAVE_AND_CLOSE_TEXT)
         self.bt_save_and_close.clicked.connect(self.__action_save_egg_and_close)
         row_bt.addWidget(self.bt_save)
         row_bt.addWidget(self.bt_save_and_close)
@@ -84,6 +85,6 @@ class WindowEggAdd(BMainWindow):
         # print(egg)
 
         self.__db.insert_egg(egg_insert=egg)
-        QMessageBox.information(self, '', 'Egg adicionado com sucesso.', QMessageBox.Ok)
+        QMessageBox.information(self, '', df.kMESSAGE_EGG_ADDED, QMessageBox.Ok)
         if close_window:
             self.close()
