@@ -40,6 +40,7 @@ class WindowEggEdit(BMainWindow):
         # self.__json.dump_json()
 
         self.__flag_chapter_event_update = False
+        self.shortcuts_list = []
 
         self.__init_interface()
 
@@ -57,9 +58,8 @@ class WindowEggEdit(BMainWindow):
         self.setWindowTitle(f'Egg - {self.egg.name_en} (Id {self.egg.id})')
         # self.resize(1000, 800)
 
-        # =========================================================================================
-        sc = QShortcut(QKeySequence('Ctrl+S'), self)
-        sc.activated.connect(self.__action_save_egg)
+        # shortcut
+        self.__create_shortcuts()
 
         # =========================================================================================
         # name
@@ -352,6 +352,25 @@ class WindowEggEdit(BMainWindow):
         self.bt_save.clicked.connect(self.__action_save_egg)
         row_bt.addWidget(self.bt_save)
         self.main_layout.addLayout(row_bt)
+
+    def __create_shortcuts(self):
+        sc = QShortcut(QKeySequence('F1'), self)
+        sc.activated.connect(self.__show_shortcuts)
+
+        self.shortcuts_list = []
+
+        sc = QShortcut(QKeySequence('Ctrl+S'), self)
+        sc.setObjectName('Salvar egg')
+        sc.activated.connect(self.__action_save_egg)
+        self.shortcuts_list.append(sc)
+
+    def __show_shortcuts(self):
+        msg = ''
+        for index, sc in enumerate(self.shortcuts_list):
+            msg += f'{sc.key().toString()}' + '\n' + f'{sc.objectName()}' + '\n'
+            if index < len(self.shortcuts_list) - 1:
+                msg += '\n'
+        QMessageBox.information(self, 'Atalhos', msg, QMessageBox.Ok)
 
     def __build_find_chapter(self, gb, cb_filter_rec, table, cbox, cb_add_rec, bt_add, bt_delete, bt_cancel):
         gb_layout = QVBoxLayout()
