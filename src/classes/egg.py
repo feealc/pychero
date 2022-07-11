@@ -1,3 +1,6 @@
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from classes.egg_base import EggBase
 from classes.parser import *
 from database.archero_db import ArcheroDb
@@ -176,6 +179,26 @@ class Egg(EggBase):
             self.find_events.update(ch_data=ch_data)
 
         self.sort_chapter_data()
+
+    def get_chapter(self, title, cb_rec: QCheckBox, index):
+        rec_list = []
+        if title == df.kNORMAL_CHAPTER:
+            if cb_rec.isChecked():
+                rec_list = list(filter(lambda x: x.recommended, self.find_normal_chapters.chapter_data))
+            else:
+                rec_list = self.find_normal_chapters.chapter_data
+        elif title == df.kHERO_CHAPTER:
+            if cb_rec.isChecked():
+                rec_list = list(filter(lambda x: x.recommended, self.find_hero_chapters.chapter_data))
+            else:
+                rec_list = self.find_hero_chapters.chapter_data
+        elif title == df.kEVENT:
+            if cb_rec.isChecked():
+                rec_list = list(filter(lambda x: x.recommended, self.find_events.chapter_data))
+            else:
+                rec_list = self.find_events.chapter_data
+
+        return rec_list[index]
 
     def sort_chapter_data(self):
         self.find_normal_chapters.chapter_data.sort(key=lambda x: x.chapter)

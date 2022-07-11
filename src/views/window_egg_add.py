@@ -13,10 +13,6 @@ class WindowEggAdd(BMainWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.centralWidget = QWidget()
-        self.setCentralWidget(self.centralWidget)
-        self.main_layout = QVBoxLayout()
-        self.centralWidget.setLayout(self.main_layout)
 
         self.__db = ArcheroDb()
         self.shortcuts_list = []
@@ -24,7 +20,7 @@ class WindowEggAdd(BMainWindow):
         self.__init_interface()
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             self.close()
 
     def closeEvent(self, event):

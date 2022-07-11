@@ -56,12 +56,12 @@ class BTableWidget(QTableWidget):
         self.verticalHeader().setVisible(True)
 
     def b_set_select_row(self):
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
     def b_ajust_header_columns(self):
         header = self.horizontalHeader()
         for index, hl in enumerate(self.__header_labels):
-            header.setSectionResizeMode(index, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(index, QHeaderView.ResizeMode.ResizeToContents)
 
     def b_ajust_header_columns_headerview(self, header_view_list):
         if len(header_view_list) != len(self.__header_labels):
