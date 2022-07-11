@@ -18,11 +18,6 @@ class MainWindow(BMainWindow):
         self.parser = parser
         self.args = args
 
-        self.centralWidget = QWidget()
-        self.setCentralWidget(self.centralWidget)
-        self.main_layout = QVBoxLayout()
-        self.centralWidget.setLayout(self.main_layout)
-
         self.__init_interface()
 
     def keyPressEvent(self, event):
@@ -39,8 +34,16 @@ class MainWindow(BMainWindow):
 
         self.main_layout.addWidget(self.bt_eggs)
 
+    def __close_window_event(self, event: QCloseEvent):
+        event.accept()
+        self.show()
+
+    #
+
     def __action_bt_eggs(self):
         self.win_eggs = WindowEggMain()
+        self.win_eggs.closeEvent = lambda event: self.__close_window_event(event=event)
+        self.hide()
         if self.args.maximized:
             self.win_eggs.showMaximized()
         else:

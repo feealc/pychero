@@ -14,10 +14,6 @@ import define as df
 class WindowEggMain(BMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.centralWidget = QWidget()
-        self.setCentralWidget(self.centralWidget)
-        self.main_layout = QVBoxLayout()
-        self.centralWidget.setLayout(self.main_layout)
 
         self.__db = ArcheroDb()
         self.eggs_list = []

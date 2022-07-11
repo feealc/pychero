@@ -23,11 +23,7 @@ class WindowEggEdit(BMainWindow):
 
     def __init__(self, egg, parent=None):
         super().__init__(parent)
-        self.centralWidget = QWidget()
-        self.setCentralWidget(self.centralWidget)
-        self.main_layout = QVBoxLayout()
         self.main_layout.setAlignment(QtCore.Qt.AlignTop)
-        self.centralWidget.setLayout(self.main_layout)
 
         """
         - quando fizer alguma mudanca, setar como True
@@ -377,7 +373,8 @@ class WindowEggEdit(BMainWindow):
         gb_layout.setAlignment(Qt.AlignCenter)
 
         # checkbox
-        # gb_layout.addWidget(cb_filter_rec)
+        cb_filter_rec.clicked.connect(lambda: self.__action_cb_filter_recmmended(title=gb.title()))
+        gb_layout.addWidget(cb_filter_rec)
 
         # table
         table.b_hide_vertical_headers()
@@ -385,7 +382,8 @@ class WindowEggEdit(BMainWindow):
         table.b_set_column_header(header_labels=['Capítulo', 'Recomendado'])
         table.b_ajust_header_columns_headerview(header_view_list=[QHeaderView.Stretch, QHeaderView.ResizeToContents])
         table.setMaximumWidth(260)
-        table.setMaximumHeight(200)
+        # table.setMaximumHeight(200)
+        table.setMinimumHeight(150)
         self.__load_chapters(title=gb.title())
         gb_layout.addWidget(table)
 
@@ -434,21 +432,29 @@ class WindowEggEdit(BMainWindow):
 
     def __load_chapters(self, title):
         rows = []
+        rec = None
         table = None
         if title == df.kNORMAL_CHAPTER:
             rows = self.egg.find_normal_chapters.chapter_data
+            rec = self.cb_rec_normal_ch
             table = self.table_normal_ch
         elif title == df.kHERO_CHAPTER:
             rows = self.egg.find_hero_chapters.chapter_data
+            rec = self.cb_rec_hero_ch
             table = self.table_hero_ch
         elif title == df.kEVENT:
             rows = self.egg.find_events.chapter_data
+            rec = self.cb_rec_event_ch
             table = self.table_event_ch
 
         table.b_clear_content()
         for ch in rows:
             # print(ch)
-            table.b_add_row(from_tuple=ch.to_tuple_table())
+            if rec.isChecked():
+                if ch.recommended:
+                    table.b_add_row(from_tuple=ch.to_tuple_table())
+            else:
+                table.b_add_row(from_tuple=ch.to_tuple_table())
 
     def __load_train_cost(self):
         self.list_train_cost.b_clear_content()
@@ -469,6 +475,9 @@ class WindowEggEdit(BMainWindow):
         self.table_competition.b_clear_content()
         for comp in self.egg.competition_stats.competition_data:
             self.table_competition.b_add_row(comp.to_tuple_table())
+
+    def __action_cb_filter_recmmended(self, title):
+        self.__load_chapters(title=title)
 
     def __action_add_chapter_event(self, title):
         # print(f'__action_add_chapter_event() - title [{title}]')
@@ -663,6 +672,7 @@ class WindowEggEdit(BMainWindow):
         self.__action_edit_chapter_event(mi=mi, title=df.kEVENT)
 
     def __action_edit_chapter_event(self, mi, title):
+        cb_filter_rec = None
         cbox = None
         cb_rec = None
         bt_add = None
@@ -675,21 +685,24 @@ class WindowEggEdit(BMainWindow):
             self.__flag_chapter_event_update = True
 
             if title == df.kNORMAL_CHAPTER:
-                reg = self.egg.find_normal_chapters.chapter_data[index]
+                reg = self.egg.get_chapter(title=title, cb_rec=self.cb_rec_normal_ch, index=index)
+                cb_filter_rec = self.cb_rec_normal_ch
                 cbox = self.cbox_normal_ch
                 cb_rec = self.cb_rec_add_normal_ch
                 bt_add = self.bt_add_normal_ch
                 bt_delete = self.bt_delete_normal_ch
                 bt_cancel = self.bt_cancel_normal_ch
             elif title == df.kHERO_CHAPTER:
-                reg = self.egg.find_hero_chapters.chapter_data[index]
+                reg = self.egg.get_chapter(title=title, cb_rec=self.cb_rec_hero_ch, index=index)
+                cb_filter_rec = self.cb_rec_hero_ch
                 cbox = self.cbox_hero_ch
                 cb_rec = self.cb_rec_add_hero_ch
                 bt_add = self.bt_add_hero_ch
                 bt_delete = self.bt_delete_hero_ch
                 bt_cancel = self.bt_cancel_hero_ch
             elif title == df.kEVENT:
-                reg = self.egg.find_events.chapter_data[index]
+                reg = self.egg.get_chapter(title=title, cb_rec=self.cb_rec_event_ch, index=index)
+                cb_filter_rec = self.cb_rec_event_ch
                 cbox = self.cbox_event_ch
                 cb_rec = self.cb_rec_add_event_ch
                 bt_add = self.bt_add_event_ch
